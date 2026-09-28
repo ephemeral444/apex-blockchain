@@ -7,10 +7,10 @@
 * **Propuesto por:** Cristian Díaz
 
 ### Por qué elegimos este
-El equipo eligió este problema de forma unánime porque representa el núcleo de nuestro proyecto de grado y aporta directamente a nuestro perfil en ingeniería y sistemas de información. Aunque la solución base contempla versionamiento inmutable y encadenamiento SHA-512, mantiene una limitación estructural crítica: los datos, los hashes y la auditoría residen en el mismo dominio tecnológico. El caso satisface con rigor los criterios de pertinencia de la Sesión 1:
+El equipo eligió este problema de forma unánime porque representa el núcleo de nuestro proyecto de grado y aporta directamente a nuestro perfil en ingeniería y sistemas de información.  El caso satisface con rigor los criterios de pertinencia de la Sesión 1:
 1. **Partes que no confían ciegamente en un único administrador:** Auditores, pacientes y entidades de control necesitan contrastar la información clínica sin depender de la buena fe del administrador de la base de datos institucional.
 2. **Histórico inalterable:** Los eventos clínicos requieren una pista de evidencia inmutable e indeleble que impida modificaciones retrospectivas o manipulación de registros ante auditorías o litigios.
-3. **Eliminación del monopolio de confianza:** Al descentralizar la evidencia en blockchain mediante anclaje de hashes, la prueba de integridad deja de ser auto-certificada por la clínica.
+
 
 ### Propuestas descartadas
 * **Propuesta 1 (Logística – Trazabilidad de mercancías):** Propuesta por Integrante 1.  
@@ -34,7 +34,7 @@ La decisión se adoptó tras una sesión de análisis técnico comparativo de la
 ### Equipo y roles
 * **Integrantes y roles:**
   * Cristian Diaz - Rol: Documentador
-  * Julian Galeano - Rol: Investigador
+  * Julián Galeano - Rol: Investigador
   * Daniel Zapata - Rol: Analista Tecnico
 * **Responsable de entregas:** Entre los 3 nos rotamos las entregas
 * **Canal de coordinación interna:** Discord / WhatsApp
@@ -42,7 +42,7 @@ La decisión se adoptó tras una sesión de análisis técnico comparativo de la
 ---
 
 ### 1. Problema y evidencia 
-En los sistemas hospitalarios de historias clínicas digitales, la información médica evoluciona de manera continua a través de nuevos diagnósticos, tratamientos, observaciones y órdenes terapéuticas. En aplicaciones convencionales carentes de un modelo estricto de versionamiento, las actualizaciones sobrescriben el estado previo, eliminando la capacidad de reconstruir fehacientemente la evolución del paciente. Aunque una primera aproximación mitiga este riesgo mediante versionamiento inmutable y encadenamiento criptográfico con SHA-512, subsiste una debilidad estructural: los expedientes, los hashes computados, los logs de auditoría y los mecanismos de verificación residen dentro del mismo perímetro tecnológico centralizado.
+En los sistemas hospitalarios de historias clínicas digitales, la información médica evoluciona de manera continua a través de nuevos diagnósticos, tratamientos, observaciones y órdenes terapéuticas. En aplicaciones convencionales carentes de un modelo estricto de versionamiento, las actualizaciones sobrescriben el estado previo, eliminando la capacidad de reconstruir fehacientemente la evolución del paciente. Subsiste una debilidad estructural y es el perímetro tecnológico centralizado.
 
 La evidencia directa de este problema radica en la vulnerabilidad de las pistas de auditoría ante privilegios administrativos elevados en motores de bases de datos relacionales. Un atacante interno o un administrador con credenciales de sistema puede alterar registros clínicos retrospectivamente, recalcular la cadena de hashes locales y regenerar la auditoría sin encender alarmas externas. Adicionalmente, reportes de peritaje médico-legal señalan que, en disputas por mala praxis o fraude clínico, las evidencias provistas por sistemas hospitalarios aislados carecen de fuerza probatoria concluyente al ser generadas, custodiadas y certificadas por la misma parte interesada. A esto se suma que la gobernanza del ciclo de vida del dato suele dispersarse en reglas heterogéneas, dificultando una trazabilidad unificada.
 
@@ -57,15 +57,13 @@ De forma indirecta, el paciente padece las consecuencias cuando decisiones clín
 ### 3. Flujo actual de valor 
 El flujo actual de gestión y aseguramiento de la información clínica dentro de la institución opera bajo la siguiente secuencia operativa:
 1. **Captura asistencial:** El médico ingresa al sistema hospitalario, diligencia la atención en el formulario clínico y confirma la operación.
-2. **Generación de versión local:** El backend procesa el payload, calcula un hash criptográfico (SHA-512) del contenido y genera una nueva versión clínica en la base de datos relacional para evitar la sobrescritura física.
-3. **Encadenamiento interno:** El sistema toma el hash de la versión previa, computa un nuevo hash encadenado y almacena un registro en la tabla interna de auditoría junto a la marca de tiempo local del servidor.
-4. **Almacenamiento unificado:** Tanto los datos clínicos sensibles, las versiones, la bitácora de eventos y los hashes quedan alojados en tablas contiguas bajo el control del mismo motor de persistencia.
-5. **Consulta o auditoría interna:** Cuando un auditor o directivo solicita verificar la integridad del expediente, el sistema ejecuta una rutina que recalcula los hashes de extremo a extremo dentro de la misma base de datos.
-6. **Dictamen de integridad auto-certificado:** El sistema compara los hashes calculados con los guardados en la tabla local. Si coinciden, reporta que el expediente es íntegro, emitiendo un veredicto que depende al 100% de la infraestructura interna de la organización.
+2. **Generación de versión local:** El backend procesa el payload y genera una nueva versión clínica en la base de datos relacional para evitar la sobrescritura física.
+3. **Almacenamiento unificado:** Tanto los datos clínicos sensibles, las versiones, la bitácora de eventos y los hashes quedan alojados en tablas contiguas bajo el control del mismo motor de persistencia.
+
 
 ### 4. Fricciones identificadas 
 El análisis del flujo actual revela puntos de fricción críticos asociados al monopolio tecnológico de la confianza:
-* **Fricción 1: Auto-certificación y colusión administrativa (Pasos 4 y 6).** Como la auditoría y los hashes conviven en la misma base de datos que los datos clínicos, cualquier actor con privilegios de administrador de base de datos (`DBA`) puede alterar un diagnóstico pasado y ejecutar un script que actualice la cadena de hashes SHA-512, burlando la validación local sin dejar rastro independiente.
+* **Fricción 1: Auto-certificación y colusión administrativa (Pasos 4 y 6).** Como la auditoría y los hashes conviven en la misma base de datos que los datos clínicos, cualquier actor con privilegios de administrador de base de datos (`DBA`) puede alterar un diagnóstico pasado.
 * **Fricción 2: Fragmentación de la gobernanza del ciclo de vida (Pasos 1 y 2).** La lógica de negocio para crear, versionar, consultar, inactivar y alertar sobre expedientes se encuentra dispersa entre módulos de software, dificultando la aplicación determinística de políticas de retención, acceso y calidad del dato.
 * **Fricción 3: Fragilidad del sello de tiempo (Paso 3).** La marca temporal de cada evento proviene del reloj del servidor local, el cual puede ser desfasado deliberadamente o por desconfiguración técnica, impidiendo garantizar el momento exacto en que ocurrió una intervención médica.
 * **Fricción 4: Falta de medio probatorio externo para el auditor (Paso 5).** El auditor carece de un canal neutro para confrontar los registros institucionales con una verdad inmutable fuera del perímetro de la clínica.
@@ -90,5 +88,5 @@ Para que el prototipo y la hipótesis de evaluación funcionen, deben cumplirse 
 * **Supuesto 3 (Delimitación experimental en entorno controlado):** Se asume que la validación en laboratorio con datos simulados y escenarios de manipulación artificial es suficiente para contrastar la efectividad del modelo frente al esquema centralizado previo.
 
 **Riesgos que podrían invalidar la hipótesis:**
-* **Riesgo de costo y sobrecarga computacional:** Que la complejidad de gestionar hashes SHA-512 y anclajes blockchain genere una latencia inaceptable para consultas masivas o costos de transacción prohibitivos si no se diseñan mecanismos de agregación eficiente.
+* **Riesgo de costo y sobrecarga computacional:** Que la complejidad de gestionar anclajes blockchain genere una latencia inaceptable para consultas masivas o costos de transacción prohibitivos si no se diseñan mecanismos de agregación eficiente.
 * **Riesgo de falla en la cola de anclaje:** Que periodos prolongados de caída en el nodo RPC provoquen un desfase crítico entre la base de datos local y la red externa, retrasando las verificaciones de auditoría.
