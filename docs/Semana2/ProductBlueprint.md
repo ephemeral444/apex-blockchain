@@ -1,71 +1,16 @@
 Entre las 7 HU de cada uno, decidimos unificarlas para diseñar estas 7 Historias de Usuario finales, que reflejan la visión del producto y los objetivos de negocio, con un enfoque en la experiencia del usuario y la funcionalidad del sistema
 
-| ID | Historia de Usuario | Enunciado Ágil (Menos Técnico) | Justificación Funcional |
-| --- | --- | --- | --- |
-| **HU-01** | **Gestión de Pacientes y Control del Expediente** | **Como** Administrador o Personal Médico,<br>
+## Historias de usuario
 
-<br>**quiero** registrar los datos básicos del paciente, abrir su historia clínica y desactivarla de forma justificada cuando sea necesario,<br>
-
-<br>**para** gestionar todo el ciclo de vida del paciente en el sistema, asegurando que cada persona tenga una única historia clínica activa sin borrar nunca su historial previo.
-
- | Unifica las operaciones administrativas de ingreso, apertura e inactivación justificada (cumpliendo con la Resolución 1995 de 1999), evitando la existencia de registros duplicados o borrados físicos destructivos.
-
- |
-| **HU-02** | **Registro e Inmutabilidad de Atenciones Médicas** | **Como** Médico o Auditor,<br>
-
-<br>**quiero** registrar nuevas atenciones médicas y consultar el historial completo o la versión más reciente,<br>
-
-<br>**para** garantizar que las consultas anteriores permanezcan intactas y sin cambios, manteniendo un registro transparente y ordenado de la evolución del paciente.
-
- | Agrupa la consulta de la versión vigente y la creación de nuevas evoluciones clínicas, asegurando que cada modificación se agregue como una nueva versión sin sobreescribir la información previa.
-
- |
-| **HU-03** | **Control de Cambios Simultáneos** | **Como** Sistema,<br>
-
-<br>**quiero** detectar y organizar las solicitudes de actualización que se envían al mismo tiempo sobre una misma historia clínica,<br>
-
-<br>**para** evitar la creación de registros duplicados o inconsistencias al guardar la información.
-
- | Gestiona la concurrencia cuando varios usuarios o procesos intentan guardar cambios simultáneamente sobre la misma versión, manteniendo la consistencia de la información.
-
- |
-| **HU-04** | **Verificación de Integridad y Alertas de Inalterabilidad** | **Como** Auditor,<br>
-
-<br>**quiero** realizar revisiones automáticas del historial clínico para detectar si algún registro ha sido modificado sin autorización, bloquear nuevas ediciones y recibir alertas de seguridad,<br>
-
-<br>**para** contener de inmediato cualquier intento de alteración y proteger la confidencialidad de la información médica.
-
- | Integra el control de integridad en la base de datos interna, aislando y bloqueando los expedientes que presenten alteraciones y notificando inmediatamente al equipo de seguridad.
-
- |
-| **HU-05** | **Control de Accesos y Permisos por Roles** | **Como** Sistema de Control de Accesos (*Data Concierge*),<br>
-
-<br>**quiero** validar el inicio de sesión del usuario, verificar sus permisos de acuerdo con su rol (médico, administrador o auditor) y registrar cada intento de consulta o modificación,<br>
-
-<br>**para** garantizar que cada persona acceda únicamente a la información que le corresponde y mantener un registro seguro de todas las actividades.
-
- | Centraliza el modelo de gobierno y seguridad, delegando la autenticación al sistema e instrumentando la autorización por roles (RBAC) y la trazabilidad de auditoría de accesos.
-
- |
-| **HU-06** | **Respaldo y Notarización en Blockchain** | **Como** Sistema de Respaldo (*Data Concierge*),<br>
-
-<br>**quiero** enviar de forma automática e independiente un sello digital seguro de cada atención médica hacia la red Blockchain (sin enviar datos personales del paciente) y reintentar el envío si la red falla,<br>
-
-<br>**para** contar con un respaldo externo e inalterable sin interrumpir ni ralentizar la atención médica en el hospital.
-
- | Procesa el envío asíncrono de evidencias digitales sin datos sensibles a la red Blockchain, asegurando que los fallos o lentitudes externas no bloqueen la atención médica local.
-
- |
-| **HU-07** | **Verificación Descentralizada y Prevención de Alteraciones** | **Como** Auditor,<br>
-
-<br>**quiero** comparar los registros médicos almacenados localmente contra las evidencias guardadas en Blockchain para visualizar toda la trayectoria de la historia clínica,<br>
-
-<br>**para** comprobar de manera independiente que la información no ha sido manipulada ni modificada de forma malintencionada en la base de datos interna.
-
- | Otorga valor probatorio frente a terceros al permitir contrastar los datos locales con la huella digital guardada en la Blockchain, detectando incluso manipulaciones internas en la base de datos.
-
- |
-
+| ID    | Historia de usuario                                       | Enunciado ágil                                                                                                                                                                                                                                                                                                      | Justificación funcional                                                                                                                                                          |
+| ----- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| HU-01 | Gestión de pacientes y control del expediente             | Como administrador o personal médico, quiero registrar los datos básicos del paciente, abrir su historia clínica y desactivarla de forma justificada cuando sea necesario, para gestionar todo su ciclo de vida en el sistema, garantizando una única historia clínica activa y conservando el historial previo.    | Unifica el ingreso, la apertura y la inactivación justificada de expedientes, conforme a la Resolución 1995 de 1999, evitando duplicados y eliminaciones físicas de información. |
+| HU-02 | Registro e inmutabilidad de atenciones médicas            | Como médico o auditor, quiero registrar nuevas atenciones médicas y consultar el historial completo o su versión más reciente, para garantizar que las consultas anteriores permanezcan intactas y mantener un registro ordenado de la evolución del paciente.                                                      | Agrupa la consulta de la versión vigente y la creación de nuevas evoluciones clínicas, evitando sobrescribir la información previa.                                              |
+| HU-03 | Control de cambios simultáneos                            | Como sistema, quiero detectar y organizar las solicitudes de actualización simultáneas sobre una misma historia clínica, para evitar registros duplicados e inconsistencias al guardar la información.                                                                                                              | Gestiona la concurrencia cuando varios usuarios o procesos intentan guardar cambios sobre la misma versión, manteniendo la consistencia de los datos.                            |
+| HU-04 | Verificación de integridad y alertas de inalterabilidad   | Como auditor, quiero realizar revisiones automáticas del historial clínico para detectar modificaciones no autorizadas, bloquear nuevas ediciones y recibir alertas de seguridad, para contener posibles alteraciones y proteger la información médica.                                                             | Integra controles de integridad que permiten aislar y bloquear expedientes alterados y notificar al equipo de seguridad.                                                         |
+| HU-05 | Control de accesos y permisos por roles                   | Como sistema de control de accesos (Data Concierge), quiero validar el inicio de sesión, verificar los permisos según el rol del usuario (médico, administrador o auditor) y registrar cada intento de consulta o modificación, para garantizar el acceso autorizado y mantener la trazabilidad de las actividades. | Centraliza la autenticación, la autorización basada en roles (RBAC) y el registro de auditoría de accesos.                                                                       |
+| HU-06 | Respaldo y notarización en blockchain                     | Como sistema de respaldo (Data Concierge), quiero enviar automáticamente un sello digital de cada atención médica a la red blockchain, sin transmitir datos personales, y reintentar el envío si la red falla, para contar con un respaldo externo e inalterable sin interrumpir la atención hospitalaria.          | Gestiona el envío asíncrono de evidencias digitales sin datos sensibles, evitando que los fallos o retrasos de la red externa bloqueen la atención médica.                       |
+| HU-07 | Verificación descentralizada y prevención de alteraciones | Como auditor, quiero comparar los registros médicos locales con las evidencias almacenadas en blockchain y visualizar la trayectoria de la historia clínica, para verificar de forma independiente que la información no haya sido manipulada.                                                                      | Permite contrastar los registros locales con las huellas digitales almacenadas en blockchain para detectar posibles manipulaciones de la base de datos interna.                  |
 
 ---
 
