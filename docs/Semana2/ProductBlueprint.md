@@ -101,3 +101,91 @@ Puedes consultar el tablero de trabajo del proyecto en el siguiente enlace:
 | **8. Métricas Clave** | • **Tiempo de respuesta local:** Latencia en la creación de evoluciones clínicas (debe mantenerse < 200 ms).<br>• **Tasa de éxito de anclaje:** Porcentaje de transacciones confirmadas exitosamente en Blockchain vía Outbox (`CONFIRMED`).<br>• **Detección de incidentes:** Número de discrepancias de integridad detectadas e intercepciones exitosas (`TAMPERED` / alertas).<br>• **Disponibilidad del servicio:** % de *uptime* de la capa Data Concierge (objetivo: 99.9%). |
 | **9. Ventaja Diferencial** | **Arquitectura de Resiliencia Dual:** Separación total entre la gestión clínica rápida en base de datos local y la notarización en Blockchain mediante el patrón Outbox. Esto asegura que la indisponibilidad de la red externa o las tarifas de red jamás bloqueen ni ralenticen la atención médica en urgencias o consulta externa. |
 
+## Arquitectura Inicial
+
+### Diagrama y Flujo de Componentes
+
+1. **Capa de Presentación (Frontend):**
+   * **Interfaz Web Client (Angular 17+):** Panel para médicos, administradores y auditores.
+
+2. **Capa de Aplicación y Middleware (.NET 8 Clean Architecture):**
+   * **API Gateway & Auth Controller:** Recepción de peticiones e inspección de tokens JWT.
+   * **Data Concierge (Orquestador):** Evaluación de reglas de negocio, autorizaciones por rol (RBAC) y control de acceso.
+   * **Hash Canonicalizer (RFC 8785) & Engine SHA-512/256:** Normalización de datos y generación de huellas criptográficas.
+   * **Outbox Background Worker:** Procesamiento asíncrono y gestión de reintentos con backoff exponencial.
+
+3. **Capa de Almacenamiento Local (Off-Chain):**
+   * **Base de Datos SQL Server:** Registro inmutable de historias clínicas, encadenamiento de hashes locales, tabla de auditoría y cola Outbox.
+
+4. **Capa Descentralizada (On-Chain / EVM):**
+   * **Nethereum Web3 Interface:** Conector con la red Blockchain.
+   * **Smart Contract (Solidity):** Registro inmutable del `EventHash` y soporte para verificación dual.
+   * **Red Blockchain (EVM):** Red descentralizada que actúa como notaría digital externa.
+
+---
+
+#### Flujo de Datos del Sistema:
+
+1. **Atención Médica:** La *Interfaz Web (Angular)* envía la petición HTTP REST con el token JWT al *API Gateway*.
+2. **Validación:** El *Data Concierge* verifica la autenticación del sistema y valida la autorización por rol.
+3. **Cálculo Criptográfico:** El *Canonicalizer* normaliza los datos y calcula el `DataHash` (SHA-512) y el `EventHash` (SHA-256).
+4. **Persistencia Local:** La transacción se confirma inmediatamente en *SQL Server*, guardando la versión clínica y registrando un ticket pendiente en la tabla Outbox.
+5. **Procesamiento Asíncrono:** El *Outbox Worker* lee periódicamente los `EventHash` pendientes.
+6. **Notarización Web3:** El worker transmite únicamente el `EventHash` de 32 bytes (sin datos personales ni clínicos PHI) al *Smart Contract* en la *Blockchain*.
+7. **Verificación Dual:** El auditor consulta al *Data Concierge*, el cual compara el hash recalculado localmente contra el hash notariado en la *Blockchain* para confirmar que la información no fue alterada.
+
+---
+
+### Explicación de la Arquitectura
+
+La arquitectura del sistema adopta el patrón de **Arquitectura Limpia (Clean Architecture)** en .NET 8, desacoplando estrictamente la interfaz de usuario, la lógica de negocio y los servicios de infraestructura externa[cite: 1, 2]. Se compone de tres capas principales:
+
+1. **Capa de Presentación (Frontend):** Construida en **Angular**, proporciona una interfaz liviana y responsiva donde médicos, administradores y auditores interactúan con la plataforma[cite: 1, 2]. Todas las peticiones viajan protegidas mediante tokens JWT firmados[cite: 1].
+2. **Capa de Aplicación y Middleware (Data Concierge):** Actúa como el núcleo orquestador[cite: 1, 2]. Intercepta las solicitudes clínicas, aplica el control de autorizaciones (RBAC), ejecuta la canonicalización de datos (RFC 8785) y calcula las huellas criptográficas (`DataHash` SHA-512 y `EventHash` SHA-256)[cite: 1]. Garantiza que el almacenamiento local en **SQL Server** sea inmediato y no sufra latencias[cite: 1, 2].
+3. **Punto de Entrada e Integración con Blockchain (On-Chain):** La red **Blockchain (EVM)** entra en juego de forma **asíncrona y desacoplada**[cite: 1, 2]. Un servicio en segundo plano (*Outbox Worker*) lee los tickets de anclaje de la base de datos y los envía al **Smart Contract (Solidity)** mediante la librería **Nethereum**[cite: 1].
+
+**Punto crítico de integración Web3:**  
+La Blockchain entra en acción **únicamente después de confirmarse la transacción médica local**[cite: 1]. Se transmite estrictamente el `EventHash` de 32 bytes (sin ningún dato personal o clínico PHI)[cite: 1]. Esto asegura que, en caso de congestión de red o caída del nodo RPC, la atención médica nunca se bloquee ni se vuelva lenta, alcanzando consistencia eventual cuando la red se restablezca[cite: 1].
+
+## Uso de Stellar y Justificación
+
+### Justificación Técnica de la Integración con Stellar
+
+Para garantizar la inmutabilidad, notoriedad externa y verificación descentralizada de las historias clínicas digitales, se selecciona la red **Stellar** como la infraestructura blockchain principal por las siguientes razones clave:
+
+1. **Eficiencia de Costos y Bajas Tarifas (Gas Fees):**  
+   En un entorno hospitalario con miles de atenciones diarias, los costos por transacción en redes tradicionales (como Ethereum L1) resultarían inviables. Stellar ofrece costos transaccionales extremadamente bajos (fracciones insignificantes de centavo por operación), lo que permite escalar el anclaje continuo de evidencias sin comprometer el presupuesto operativo de las IPS.
+
+2. **Alta Velocidad y Confirmación Rápida:**  
+   El algoritmo de consenso de Stellar (Stellar Consensus Protocol - SCP) logra tiempos de cierre de bloque e inmutabilidad de transacciones en un rango de 3 a 5 segundos. Esta velocidad es ideal para la confirmación rápida del patrón *Outbox*, reduciendo drásticamente la ventana de tiempo en la que un ticket de anclaje permanece en estado `PENDING`.
+
+3. **Arquitectura Orientada a Datos y Anclaje de Evidencias (Data Entries):**  
+   Stellar permite asociar entradas de datos clave-valor (`Data Entries` de hasta 64 bytes) directamente a las cuentas o transacciones. Esto encaja perfectamente con nuestra arquitectura, donde transmitimos únicamente el `EventHash` de 32 bytes de forma opaca, sin necesidad de desplegar lógica compleja de contratos inteligentes ni incurrir en sobrecostos de cómputo.
+
+4. **Sostenibilidad y Huella Cero en Operación Clínica:**  
+   SCP es un mecanismo de consenso ecológico y de bajo consumo energético en comparación con Proof of Work (PoW). Además, su integración mediante SDKs livianos permite comunicarse de forma fluida con el backend en .NET mediante llamadas REST/Horizon API.
+
+---
+
+### Componentes de Stellar Utilizados
+
+1. **Horizon REST API:**  
+   Utilizado por el servicio en segundo plano (*Outbox Worker*) para consultar el estado de la red, consultar cuentas y transmitir las transacciones empaquetadas desde la infraestructura hospitalaria local hacia la red Stellar.
+
+2. **Cuentas y Claves Criptográficas (KeyPair - Ed25519):**  
+   El *Data Concierge* administra una cuenta emisora institucional en Stellar, protegida mediante claves públicas y privadas bajo la curva Ed25519, responsable de firmar digitalmente las solicitudes de anclaje.
+
+3. **Operación `Manage Data` (Sello de EventHash):**  
+   Es el componente central utilizado para notarizar la evidencia. Cada vez que se procesa una nueva versión clínica, se ejecuta una operación `ManageData` asignando el identificador de versión/expediente como clave y el `EventHash` (32 bytes) como valor inmutable.
+
+4. **Stellar Expert / Horizon Explorer (Auditoría Externa):**  
+   Herramienta utilizada por los auditores externos para consultar los hashes de transacción (`TxHash`), marcas de tiempo de la red y números de bloque, sirviendo como prueba notarial pública e independiente ante entes reguladores o judicialización de casos.
+
+---
+
+### Criterio de Pertinencia y Seguridad
+
+La integración de Stellar cumple estrictamente con los principios de protección de datos personales (como la Ley 1581 de Colombia y GDPR):
+
+* **Cero Información de Salud Protegida (PHI/PII):** En la cadena pública de Stellar se registra exclusivamente el sello matemático opaco (`EventHash`).
+* **Desacoplamiento Clínico:** La indisponibilidad o congestión temporal de la red Stellar jamás interrumpe la atención médica local en urgencias o consulta externa. El patrón *Outbox* garantiza que el registro se guarde inmediatamente en SQL Server y se ancle de manera asíncrona en la blockchain.
