@@ -83,7 +83,11 @@ Dejar fuera estas capacidades secundarias no compromete el valor entregado, ya q
 
 ## Lean Canvas
 
-https://miro.com/welcomeonboard/a01tN2gveksxa2Zibmh0RUZzUFhBSlJCY1BKZllHcjRrVndmVGZjckNDNFhVVFltaUpQczJVeFVWaVNYNGZVUWM0VW5QbG9peEZaNEY2QW1HUkJqdlo3TXRrdUlQV3A2T0tldFJDbXhzTy95dHNKM0piTEx4cWVlck95RjlFa1pQdGo1ZEV3bUdPQWRZUHQzSGl6V2NBPT0hdjE=?share_link_id=969511276548
+## Tablero colaborativo en Miro
+
+Puedes consultar el tablero de trabajo del proyecto en el siguiente enlace:
+
+[Acceder al tablero en Miro](https://miro.com/welcomeonboard/a01tN2gveksxa2Zibmh0RUZzUFhBSlJCY1BKZllHcjRrVndmVGZjckNDNFhVVFltaUpQczJVeFVWaVNYNGZVUWM0VW5QbG9peEZaNEY2QW1HUkJqdlo3TXRrdUlQV3A2T0tldFJDbXhzTy95dHNKM0piTEx4cWVlck95RjlFa1pQdGo1ZEV3bUdPQWRZUHQzSGl6V2NBPT0hdjE=?share_link_id=969511276548)
 
 | Bloque | Descripción / Contenido |
 | :--- | :--- |
