@@ -83,6 +83,8 @@ Dejar fuera estas capacidades secundarias no compromete el valor entregado, ya q
 
 ## Lean Canvas
 
+https://miro.com/welcomeonboard/a01tN2gveksxa2Zibmh0RUZzUFhBSlJCY1BKZllHcjRrVndmVGZjckNDNFhVVFltaUpQczJVeFVWaVNYNGZVUWM0VW5QbG9peEZaNEY2QW1HUkJqdlo3TXRrdUlQV3A2T0tldFJDbXhzTy95dHNKM0piTEx4cWVlck95RjlFa1pQdGo1ZEV3bUdPQWRZUHQzSGl6V2NBPT0hdjE=?share_link_id=969511276548
+
 | Bloque | Descripción / Contenido |
 | :--- | :--- |
 | **1. Problema** | • **Riesgo de manipulación interna:** Vulnerabilidad a alteraciones o borrados malintencionados de registros clínicos en bases de datos locales por usuarios con privilegios elevados (DBAs, administradores).<br>• **Desconfianza frente a terceros:** Dificultad para demostrar ante aseguradoras, auditores o jueces que una historia clínica no fue modificada con posterioridad al evento médico.<br>• **Conflicto normativo y privacidad:** Riesgo de sanciones por violar normativas de datos personales (Ley 1581 / GDPR) si se exponen datos sensibles de salud (PHI) en redes públicas o descentralizadas. |
