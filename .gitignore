@@ -1,7 +1,20 @@
+# Visual Studio
 [Bb]in/
 [Oo]bj/
 .vs/
 *.vsidx
 *.suo
 *.user
-slnx.sqlite*.vs/
+slnx.sqlite
+*.vs/
+
+# Node / Next.js (frontend)
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+npm-debug.log*
+
+# Entornos y despliegue
+.env*
+.vercel
