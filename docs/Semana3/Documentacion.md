@@ -74,8 +74,8 @@ La decisión quedó plasmada en la arquitectura del front: los repositorios mock
 
 | Integrante | Usuario de GitHub | Aporte en este entregable |
 | --- | --- | --- |
-| Daniel Zapata | *(completar usuario)* | Construcción del front en Next.js: arquitectura por features con MVVM, sesión por roles y pantallas de expediente con sellado simulado. |
-| Cristian Díaz | *(completar usuario)* | Pantallas de administración de pacientes (registro, búsqueda e inactivación justificada) y revisión de la documentación. |
+| Daniel Zapata | DanielZR30 | Construcción del front en Next.js: arquitectura por features con MVVM, sesión por roles y pantallas de expediente con sellado simulado. |
+| Cristian Díaz | ephemeral444 | Pantallas de administración de pacientes (registro, búsqueda e inactivación justificada) y revisión de la documentación. |
 | Julián Galeano | jugaleano32 | Módulo de verificación de auditoría con el escenario de manipulación, y validación del flujo contra las historias de usuario del Blueprint. |
 
 ## 4. Bloqueos y siguiente paso
