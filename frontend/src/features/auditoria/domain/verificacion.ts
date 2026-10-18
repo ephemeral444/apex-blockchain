@@ -7,6 +7,8 @@ export interface VerificacionAtencion {
   fecha: string;
   titulo: string;
   resultado: ResultadoAtencion;
+  /** Hash de la transacción de anclaje, para enlazar al explorador público. */
+  respaldoId?: string;
 }
 
 export interface VerificacionExpediente {

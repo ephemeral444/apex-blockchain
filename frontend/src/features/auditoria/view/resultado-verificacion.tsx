@@ -1,8 +1,9 @@
 "use client";
 
-import { CheckCircle2, Clock, ShieldCheck, TriangleAlert } from "lucide-react";
+import { CheckCircle2, Clock, ExternalLink, ShieldCheck, TriangleAlert } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatearFechaCorta, formatearFechaLarga } from "@/shared/lib/format";
+import { enlaceTransaccion } from "@/shared/lib/stellar";
 import type { ResultadoAtencion, VerificacionExpediente } from "../domain/verificacion";
 
 function IconoAtencion({ resultado }: { resultado: ResultadoAtencion }) {
@@ -65,6 +66,18 @@ export function ResultadoVerificacion({
                     {formatearFechaCorta(atencion.fecha)}
                   </span>
                 </span>
+                {atencion.respaldoId && (
+                  <a
+                    href={enlaceTransaccion(atencion.respaldoId)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-muted-foreground underline-offset-2 hover:underline"
+                    title="Ver el anclaje público de esta atención en el explorador de la red de pruebas"
+                  >
+                    Anclaje
+                    <ExternalLink className="size-3" />
+                  </a>
+                )}
                 <span
                   className={
                     atencion.resultado === "ALTERADO"

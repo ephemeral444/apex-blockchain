@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { formatearFechaLarga } from "@/shared/lib/format";
+import { CUENTA_INSTITUCIONAL, enlaceCuentaInstitucional, enlaceTransaccion } from "@/shared/lib/stellar";
 import type { Atencion } from "../domain/atencion";
 
 interface RespaldoDialogProps {
@@ -58,19 +59,35 @@ export function RespaldoDialog({ atencion, abierto, onCerrar }: RespaldoDialogPr
             <p className="text-muted-foreground">
               Cada atención recibe un sello único que se respalda en una red externa e
               independiente: si alguien modifica el registro después, el sello deja de coincidir.
-              En el MVP final, este identificador enlaza directamente con la red de pruebas de
-              Stellar.
+              Este identificador corresponde a la transacción de anclaje en la red de pruebas de
+              Stellar y cualquier persona puede consultarlo.
             </p>
           </div>
         )}
 
         <DialogFooter className="sm:justify-between">
-          <Button asChild variant="ghost">
-            <a href="https://stellar.expert/explorer/testnet" target="_blank" rel="noreferrer">
-              Explorador de la red externa
-              <ExternalLink className="ml-2 size-4" />
-            </a>
-          </Button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            {atencion?.sello.respaldoId && (
+              <Button asChild variant="ghost">
+                <a
+                  href={enlaceTransaccion(atencion.sello.respaldoId)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Ver transacción de anclaje
+                  <ExternalLink className="ml-2 size-4" />
+                </a>
+              </Button>
+            )}
+            {CUENTA_INSTITUCIONAL && (
+              <Button asChild variant="ghost">
+                <a href={enlaceCuentaInstitucional()} target="_blank" rel="noreferrer">
+                  Libro de anclajes
+                  <ExternalLink className="ml-2 size-4" />
+                </a>
+              </Button>
+            )}
+          </div>
           <Button onClick={onCerrar}>Cerrar</Button>
         </DialogFooter>
       </DialogContent>

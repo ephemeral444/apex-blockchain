@@ -1,4 +1,5 @@
 import { calcularSello } from "@/shared/lib/hash";
+import { claveDeAtencion } from "@/shared/lib/stellar";
 import { CLAVES, guardar, leer } from "@/shared/lib/storage";
 import type { AtencionRepository } from "@/features/atenciones/domain/atencion";
 import { contenidoSellado } from "@/features/atenciones/domain/atencion";
@@ -9,10 +10,20 @@ import type {
   VerificacionExpediente,
 } from "../domain/verificacion";
 
+interface DatoAnclado {
+  encontrado: boolean;
+  hashHex?: string;
+}
+
 /**
- * Verificación dual del Blueprint: recalcula el sello del contenido actual
- * de cada atención y lo compara con el sello guardado al momento del
- * registro. Cualquier diferencia acredita una manipulación posterior.
+ * Verificación dual del Blueprint, ahora contra la red:
+ * 1. Recalcula el sello del contenido actual y lo compara con el sello
+ *    guardado al momento del registro (manipulación local).
+ * 2. Para las atenciones confirmadas, contrasta ese sello con la entrada
+ *    anclada en Stellar testnet (la copia pública e inmutable).
+ * Cualquier diferencia acredita una manipulación posterior; si la red no
+ * está alcanzable, la atención queda pendiente en vez de dar por buena una
+ * verificación que no se hizo.
  */
 export class VerificadorIntegridad {
   constructor(
@@ -37,7 +48,23 @@ export class VerificadorIntegridad {
         detalle.push(this.detalle(atencion, "ALTERADO"));
         continue;
       }
-      detalle.push(this.detalle(atencion, atencion.sello.estado === "PENDIENTE" ? "PENDIENTE" : "INTEGRO"));
+      if (atencion.sello.estado === "PENDIENTE") {
+        detalle.push(this.detalle(atencion, "PENDIENTE"));
+        continue;
+      }
+
+      const anclado = await this.leerAnclado(atencion.id);
+      if (anclado === null) {
+        // La red externa no respondió: no se da por buena la verificación.
+        detalle.push(this.detalle(atencion, "PENDIENTE"));
+        continue;
+      }
+      if (anclado.hashHex !== atencion.sello.hash) {
+        alteradas.push(atencion.id);
+        detalle.push(this.detalle(atencion, "ALTERADO"));
+        continue;
+      }
+      detalle.push(this.detalle(atencion, "INTEGRO"));
     }
 
     if (alteradas.length > 0) {
@@ -60,16 +87,35 @@ export class VerificadorIntegridad {
     return verificacion;
   }
 
-  private detalle(atencion: { id: string; fecha: string; motivo: string }, resultado: VerificacionAtencion["resultado"]) {
-    return { atencionId: atencion.id, fecha: atencion.fecha, titulo: atencion.motivo, resultado };
+  private async leerAnclado(idAtencion: string): Promise<DatoAnclado | null> {
+    try {
+      const respuesta = await fetch(`/api/verificar?clave=${encodeURIComponent(claveDeAtencion(idAtencion))}`);
+      if (!respuesta.ok) return null;
+      return (await respuesta.json()) as DatoAnclado;
+    } catch {
+      return null;
+    }
   }
 
-  private construirResumen(resultado: ResultadoExpediente, alteradas: number, total: number): string {
+  private detalle(
+    atencion: { id: string; fecha: string; motivo: string; sello: { respaldoId?: string } },
+    resultado: VerificacionAtencion["resultado"],
+  ) {
+    return {
+      atencionId: atencion.id,
+      fecha: atencion.fecha,
+      titulo: atencion.motivo,
+      resultado,
+      respaldoId: atencion.sello.respaldoId,
+    };
+  }
+
+  private construirResumen(resultado: ResultadoExpediente, alteradas: number, total: number) {
     if (total === 0) return "El expediente no tiene atenciones registradas para verificar.";
     if (resultado === "ALTERADO") {
       return `Se detectaron ${alteradas} de ${total} atenciones que no coinciden con su sello de integridad. El expediente quedó bloqueado y se emitió una alerta de seguridad.`;
     }
-    return `Las ${total} atenciones del expediente coinciden con su sello de integridad. No se detectó ninguna manipulación.`;
+    return `Las ${total} atenciones del expediente coinciden con su sello de integridad, contrastado contra el anclaje público en la red de pruebas de Stellar.`;
   }
 }
 

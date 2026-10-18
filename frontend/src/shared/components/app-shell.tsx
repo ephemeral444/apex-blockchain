@@ -48,8 +48,8 @@ const NAVEGACION_POR_ROL: Record<Rol, ItemNavegacion[]> = {
 
 /**
  * Contenedor visual de la app: barra lateral por rol y área de contenido.
- * Aquí vive también el sellador simulado (el "servicio en segundo plano"):
- * confirma los respaldos pendientes cada segundo mientras la app está abierta.
+ * Aquí vive también el sellador (el "servicio en segundo plano"): ancla en
+ * Stellar testnet los respaldos pendientes mientras la app está abierta.
  */
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { usuario, cerrarSesion } = useSesion();
