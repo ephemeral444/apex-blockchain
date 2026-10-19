@@ -62,8 +62,8 @@ Ajustes priorizados por impacto y esfuerzo: primero el anclaje real con reintent
 
 | Integrante | Usuario GitHub | Aporte principal esta semana |
 |---|---|---|
-| Daniel Zapata | *(completar usuario)* | Back Stellar: API de anclaje y verificación, sellador real, cuenta institucional |
-| Cristian Díaz | *(completar usuario)* | Verificación dual del auditor y evidencias públicas en el explorador |
-| Julián Galeano | *(completar usuario)* | Despliegue en Vercel, documentación de semana 4 y video |
+| Daniel Zapata | DanielZR30 | Back Stellar: API de anclaje y verificación, sellador real, cuenta institucional |
+| Cristian Díaz | ephemeral444 | Verificación dual del auditor y evidencias públicas en el explorador |
+| Julián Galeano | jugaleano32 | Despliegue en Vercel, documentación de semana 4 y video |
 
 > Cada integrante realiza su propio commit en el repositorio durante la semana como evidencia de participación individual.
