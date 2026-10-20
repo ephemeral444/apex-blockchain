@@ -28,6 +28,8 @@ En cada transacción se puede abrir la operación `Manage Data` y ver la entrada
 
 ## Aprendizajes y ajustes priorizados
 
+Durante las cuatro semanas aprendimos que garantizar la integridad de las historias clínicas no exige almacenar información sensible en blockchain ni desarrollar un contrato inteligente. Para nuestro caso, la operación nativa `Manage Data` de Stellar permite anclar sellos SHA-256 de las atenciones en testnet y contrastarlos posteriormente con el contenido local. También comprobamos la importancia de separar la experiencia de usuario de la infraestructura: la arquitectura por funcionalidades permitió sustituir el sellado simulado de la semana 3 por transacciones reales en la semana 4, manteniendo el flujo de registro y auditoría.
+
 El aprendizaje más importante fue distinguir "usar Stellar" de "programar contratos": para notarizar evidencia no se necesita Soroban ni Rust, y la operación nativa `Manage Data` sobre la cuenta institucional resuelve el caso con menos costo, menos superficie de error y evidencia igual de pública. El segundo aprendizaje fue el valor del diseño previo: como la semana 3 dejó el sellador simulado tras una interfaz idéntica, el reemplazo por el anclaje real no tocó la experiencia de usuario ni las vistas.
 
 El punto técnico más delicado fue la serialización determinista: el sello que calcula el navegador debe ser byte a byte el mismo que quedó anclado, así que fijamos datos demo con identificadores y fechas estables y un script que ancla con la misma lógica (`scripts/sellar-semilla.mjs`), verificable por cualquiera.
