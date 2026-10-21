@@ -15,7 +15,7 @@ Tal como declaramos en el Entregable 3 (Opción B: tecnología del ecosistema, s
 | Evidencia | Enlace |
 |---|---|
 | Producto en línea (Vercel) | https://apex-blockchain-pweo2q44k-ephemeral444.vercel.app/login |
-| Video pitch + demo (máx. 3 min) | **[COMPLETAR AL SUBIR A YOUTUBE: enlace público]** |
+| Video pitch + demo (máx. 3 min) | **[https://drive.google.com/file/d/1TphVdm3ChfqbvxdFUIaM6YqquHioGP63/view?usp=drive_link]** |
 | Cuenta institucional en el explorador | https://stellar.expert/explorer/testnet/account/GDCQCF75CVMA3E3NP4ORXKK3RWYNDPE55AFCL5HWLL2IJC2OQNGWD2LH |
 | Tx anclaje atención demo `atn-001` | https://stellar.expert/explorer/testnet/tx/6c318851487cfc01cd12095d7e89cd520a342c090c2197854a1500e0317d9426 |
 | Tx anclaje atención demo `atn-002` | https://stellar.expert/explorer/testnet/tx/4bb5308352f4559786210df9f2d155baadfad678f2158b2d348475f2a433049e |
